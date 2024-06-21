@@ -1072,3 +1072,26 @@ int of_changeset_add_prop_bool(struct of_changeset *ocs, struct device_node *np,
 	return of_changeset_add_prop_helper(ocs, np, &prop);
 }
 EXPORT_SYMBOL_GPL(of_changeset_add_prop_bool);
+
+int of_changeset_add_prop_phandle_array(struct of_changeset *ocs,
+					struct device_node *np,
+					const char *prop_name,
+					const phandle *array, size_t sz)
+{
+	
+	struct property prop;
+	__be32 *val __free(kfree) = kcalloc(sz, sizeof(*array), GFP_KERNEL);
+	int i;
+
+	if (!val)
+		return -ENOMEM;
+
+	for (i = 0; i < sz; i++)
+		val[i] = cpu_to_be32(array[i]);
+	prop.name = (char *)prop_name;
+	prop.length = sizeof(*array) * sz;
+	prop.value = (void *)val;
+
+	return of_changeset_add_prop_helper(ocs, np, &prop);
+}
+EXPORT_SYMBOL_GPL(of_changeset_add_prop_phandle_array);

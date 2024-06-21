@@ -1686,6 +1686,9 @@ spi_transfer_is_last(struct spi_controller *ctlr, struct spi_transfer *xfer)
 
 #if IS_ENABLED(CONFIG_OF)
 struct spi_controller *of_find_spi_controller_by_node(struct device_node *node);
+
+struct spi_device *
+of_register_spi_device(struct spi_controller *ctlr, struct device_node *nc);
 #endif
 
 #endif /* __LINUX_SPI_H */
