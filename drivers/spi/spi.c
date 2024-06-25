@@ -2566,7 +2566,7 @@ static int of_spi_parse_dt(struct spi_controller *ctlr, struct spi_device *spi,
 	return 0;
 }
 
-static struct spi_device *
+struct spi_device *
 of_register_spi_device(struct spi_controller *ctlr, struct device_node *nc)
 {
 	struct spi_device *spi;
@@ -2612,6 +2612,7 @@ err_out:
 	spi_dev_put(spi);
 	return ERR_PTR(rc);
 }
+EXPORT_SYMBOL_GPL(of_register_spi_device);
 
 /**
  * of_register_spi_devices() - Register child devices onto the SPI bus
