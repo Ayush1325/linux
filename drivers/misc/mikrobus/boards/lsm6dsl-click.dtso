@@ -1,0 +1,28 @@
+// SPDX-License-Identifier: GPL-2.0-only OR MIT
+/*
+ * Copyright (C) 2024 Ayush Singh <ayush@beagleboard.org>
+ */
+
+/dts-v1/;
+/plugin/;
+
+/ {
+	fragment@0 {
+		target-path="/board";
+
+		__overlay__ {
+			status = "okay";
+			
+			spi {
+				#address-cells = <1>;
+				#size-cells = <0>;
+		
+				lsm6dsl_click: lsm6dsl-click@2 {
+					reg = <2>;
+					compatible = "st,lsm6ds3";
+					spi-max-frequency = <1000000>;
+				};
+			};
+		};
+	};
+};
