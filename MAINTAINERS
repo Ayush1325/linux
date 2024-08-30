@@ -15432,6 +15432,7 @@ F:	drivers/usb/image/microtek.*
 MIKROBUS CONNECTOR
 M:	Ayush Singh <ayush@beagleboard.org>
 S:	Maintained
+F:	arch/arm64/boot/dts/ti/k3-am625-beagleplay-mikrobus-connector0.dtso
 F:	Documentation/devicetree/bindings/connector/mikrobus-connector.yaml
 F:	drivers/misc/mikrobus/
 

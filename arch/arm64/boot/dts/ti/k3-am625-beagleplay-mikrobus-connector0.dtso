@@ -1,0 +1,49 @@
+// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
+/**
+ * MikroBUS Overlay for BeaglePlay MikroBUS Connector 0
+ *
+ * Copyright (C) 2024 Ayush Singh <ayush@beagleboard.org>
+ */
+
+/dts-v1/;
+/plugin/;
+
+&{/} {
+	__symbols__ {
+		MIKROBUS_CONNECTOR = "/mikrobus-connector0";
+
+		/* GPIO controller for all pins */
+		MIKROBUS_ALL_GPIO = "/mikrobus-connector0";
+
+		/* MikroBUS connector 0 SCL Pin options */
+		MIKROBUS_SCL_MUX_I2C_SCL = "/bus@f0000/pinctrl@f4000/mikrobus-i2c-default-pins";
+		MIKROBUS_SCL_MUX_DIGITAL = "/bus@f0000/pinctrl@f4000/mikrobus-i2c-gpio-pins";
+
+		/* MikroBUS connector 0 SDA Pin options */
+		MIKROBUS_SDA_MUX_I2C_SDA = "/bus@f0000/pinctrl@f4000/mikrobus-i2c-default-pins";
+		MIKROBUS_SDA_MUX_DIGITAL = "/bus@f0000/pinctrl@f4000/mikrobus-i2c-gpio-pins";
+
+		/* MikroBUS connector 0 UART_TX Pin options */
+		MIKROBUS_TX_MUX_UART_TX = "/bus@f0000/pinctrl@f4000/mikrobus-uart-default-pins";
+		MIKROBUS_TX_MUX_DIGITAL = "/bus@f0000/pinctrl@f4000/mikrobus-uart-gpio-pins";
+
+		/* MikroBUS connector 0 UART_RX Pin options */
+		MIKROBUS_RX_MUX_UART_RX = "/bus@f0000/pinctrl@f4000/mikrobus-uart-default-pins";
+		MIKROBUS_RX_MUX_DIGITAL = "/bus@f0000/pinctrl@f4000/mikrobus-uart-gpio-pins";
+
+		/* MikroBUS connector 0 PWM Pin options */
+		MIKROBUS_PWM_MUX_PWM = "/bus@f0000/pinctrl@f4000/mikrobus-pwm-default-pins";
+		MIKROBUS_PWM_MUX_DIGITAL = "/bus@f0000/pinctrl@f4000/mikrobus-pwm-gpio-pins";
+
+		/* MikroBUS connector 0 uses main_i2c3 for I2C on BeaglePlay */
+		MIKROBUS_SCL_I2C = "/bus@f0000/i2c@20030000";
+		MIKROBUS_SDA_I2C = "/bus@f0000/i2c@20030000";
+
+		/* MikroBUS connector 0 uses main_uart5 for UART on BeaglePlay */
+		MIKROBUS_TX_UART = "/bus@f0000/serial@2850000";
+		MIKROBUS_RX_UART = "/bus@f0000/serial@2850000";
+
+		/* MikroBUS connector 0 uses ecap2 for PWM on BeaglePlay */
+		MIKROBUS_PWM_PWM = "/bus@f0000/pwm@23120000";
+	};
+};
