@@ -1,0 +1,28 @@
+// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
+/**
+ * MikroBUS - GPS3 Click
+ *
+ * https://www.mikroe.com/gps-3-click
+ *
+ * Copyright (C) 2024 Ayush Singh <ayush@beagleboard.org>
+ */
+
+/dts-v1/;
+/plugin/;
+
+#include <dt-bindings/gpio/gpio.h>
+
+&MIKROBUS_CONNECTOR {
+	status = "okay";
+};
+
+&MIKROBUS_TX_UART {
+	status = "okay";
+	pinctrl-names = "default";
+	pinctrl-0 = <&MIKROBUS_TX_MUX_UART_TX>;
+
+	gnss {
+		compatible = "u-blox,neo-8";
+		reset-gpios = <&MIKROBUS_ALL_GPIO 10 GPIO_ACTIVE_LOW>;
+	};
+};
