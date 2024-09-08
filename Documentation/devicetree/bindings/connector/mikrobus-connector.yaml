@@ -1,0 +1,40 @@
+# SPDX-License-Identifier: GPL-2.0 OR BSD-2-Clause
+#
+# Copyright (c) Ayush Singh <ayush@beagleboard.org>
+%YAML 1.2
+---
+$id: http://devicetree.org/schemas/connector/mikrobus-connector.yaml#
+$schema: http://devicetree.org/meta-schemas/core.yaml#
+
+title: mikroBUS add-on board socket
+
+maintainers:
+  - Ayush Singh <ayush@beagleboard.org>
+
+properties:
+  compatible:
+    const: mikrobus-connector
+
+required:
+  - compatible
+
+additionalProperties: true
+
+examples:
+  - |
+    mikrobus_connector0: mikrobus-connector0 {
+      status = "okay";
+      compatible = "mikrobus-connector";
+
+      #gpio-cells = <2>;
+      gpio-map =
+      <0 0 &main_gpio1 11 0>, <1 0 &main_gpio1 9 0>,
+      <2 0 &main_gpio1 24 0>, <3 0 &main_gpio1 25 0>,
+      <4 0 &main_gpio1 22 0>, <5 0 &main_gpio1 23 0>,
+      <6 0 &main_gpio1 7 0>, <7 0 &main_gpio1 8 0>,
+      <8 0 &main_gpio1 14 0>, <9 0 &main_gpio1 13 0>,
+      <10 0 &main_gpio1 12 0>, <11 0 &main_gpio1 10 0>;
+      gpio-map-mask = <0xf 0x0>;
+      gpio-map-pass-thru = <0x0 0x1>;
+    };
+
