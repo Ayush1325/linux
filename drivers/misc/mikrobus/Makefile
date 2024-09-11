@@ -1,3 +1,4 @@
 # SPDX-License-Identifier: GPL-2.0
 
 obj-$(CONFIG_MIKROBUS) += mikrobus.o
+subdir-y += overlays
