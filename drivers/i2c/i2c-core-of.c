@@ -84,13 +84,20 @@ static struct i2c_client *of_i2c_register_device(struct i2c_adapter *adap,
 static void of_i2c_register_children(struct i2c_adapter *adap,
 				     struct device_node *bus)
 {
+	struct device_node *node, *extension;
 	struct i2c_client *client;
-	struct device_node *node;
 
 	dev_dbg(&adap->dev, "of_i2c: walking child nodes from %pOF\n", bus);
 
-	/* Register device directly attached to this bus */
+	/*
+	 * Register device directly described in this bus node before looking
+	 * at extensions.
+	 */
 	for_each_available_child_of_node(bus, node) {
+		/* Filter out extension node */
+		if (of_node_name_eq(node, "i2c-bus-extension"))
+			continue;
+
 		if (of_node_test_and_set_flag(node, OF_POPULATED))
 			continue;
 
@@ -101,6 +108,23 @@ static void of_i2c_register_children(struct i2c_adapter *adap,
 				 node);
 			of_node_clear_flag(node, OF_POPULATED);
 		}
+	}
+
+	/* Look at extensions */
+	for_each_available_child_of_node(bus, node) {
+		if (!of_node_name_eq(node, "i2c-bus-extension"))
+			continue;
+
+		extension = of_parse_phandle(node, "i2c-bus", 0);
+		if (!extension)
+			continue;
+
+		/*
+		 * Register children available at this extension possibly
+		 * walking other chained extensions.
+		 */
+		of_i2c_register_children(adap, extension);
+		of_node_put(extension);
 	}
 }
 
