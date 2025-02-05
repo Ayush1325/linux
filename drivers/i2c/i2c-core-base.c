@@ -1875,14 +1875,55 @@ static int i2c_dev_or_parent_fwnode_match(struct device *dev, const void *data)
  */
 struct i2c_adapter *i2c_find_adapter_by_fwnode(struct fwnode_handle *fwnode)
 {
+	struct fwnode_reference_args args;
+	struct fwnode_handle *adap_fwnode;
 	struct i2c_adapter *adapter;
 	struct device *dev;
+	int err;
 
 	if (!fwnode)
 		return NULL;
 
-	dev = bus_find_device(&i2c_bus_type, NULL, fwnode,
+	adap_fwnode = fwnode_handle_get(fwnode);
+
+	/* Walk extension busses (through i2c-parent) up to the adapter node */
+	while (fwnode_property_present(adap_fwnode, "i2c-parent")) {
+		/*
+		 * A specific case exists for the i2c demux pinctrl. The i2c bus
+		 * node related this component (the i2c demux pinctrl node
+		 * itself) has an i2c-parent property set. This property is used
+		 * by the i2c demux pinctrl component for the demuxing purpose
+		 * and is not related to the extension bus feature.
+		 *
+		 * In this current i2c-parent walking, the i2c demux pinctrl
+		 * node has to be considered as an adapter node and so, if
+		 * the adap_fwnode node is an i2c demux pinctrl node, simply
+		 * stop the i2c-parent walking.
+		 */
+		if (fwnode_property_match_string(adap_fwnode, "compatible",
+						 "i2c-demux-pinctrl") >= 0)
+			break;
+
+		/*
+		 * i2c-parent property available in a i2c bus node means that
+		 * this node is an extension bus node. In that case,
+		 * continue i2c-parent walking up to the adapter node.
+		 */
+		err = fwnode_property_get_reference_args(adap_fwnode, "i2c-parent",
+							 NULL, 0, 0, &args);
+		if (err)
+			break;
+
+		pr_debug("Find adapter for %pfw, use parent: %pfw\n", fwnode,
+			 args.fwnode);
+
+		fwnode_handle_put(adap_fwnode);
+		adap_fwnode = args.fwnode;
+	}
+
+	dev = bus_find_device(&i2c_bus_type, NULL, adap_fwnode,
 			      i2c_dev_or_parent_fwnode_match);
+	fwnode_handle_put(adap_fwnode);
 	if (!dev)
 		return NULL;
 
