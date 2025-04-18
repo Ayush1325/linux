@@ -37,12 +37,18 @@ unsafe impl<T: Driver + 'static> driver::RegistrationOps for Adapter<T> {
             None => core::ptr::null(),
         };
 
+        let driver_dev_groups = match T::DRIVER_DEV_GROUPS {
+            Some(table) => table.as_ptr(),
+            None => core::ptr::null_mut(),
+        };
+
         // SAFETY: It's safe to set the fields of `struct platform_driver` on initialization.
         unsafe {
             (*pdrv.get()).driver.name = name.as_char_ptr();
             (*pdrv.get()).probe = Some(Self::probe_callback);
             (*pdrv.get()).remove = Some(Self::remove_callback);
             (*pdrv.get()).driver.of_match_table = of_table;
+            (*pdrv.get()).driver.dev_groups = driver_dev_groups;
         }
 
         // SAFETY: `pdrv` is guaranteed to be a valid `RegType`.
@@ -158,6 +164,8 @@ pub trait Driver: Send {
 
     /// The table of OF device ids supported by the driver.
     const OF_ID_TABLE: Option<of::IdTable<Self::IdInfo>>;
+
+    const DRIVER_DEV_GROUPS: Option<crate::sysfs::AttributeGroupTable>;
 
     /// Platform driver probe.
     ///
