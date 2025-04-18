@@ -1,0 +1,9 @@
+menuconfig POCKETBEAGLE_CONNECTOR
+	tristate "Module for instantiating devices on PocketBeagle Connector"
+	help
+	  This option enables the PocketBeagle connector driver.
+
+	  Say Y here to enable support for this driver.
+
+	  To compile this code as a module, chose M here: the module
+	  will be called pocketbeagle_connector.ko
