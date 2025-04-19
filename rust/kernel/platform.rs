@@ -252,3 +252,10 @@ unsafe impl Send for Device {}
 // SAFETY: `Device` can be shared among threads because all methods of `Device`
 // (i.e. `Device<Normal>) are thread safe.
 unsafe impl Sync for Device {}
+
+pub fn driver_data_mut<T>(device: &device::Device) -> &mut T {
+    let pdev = unsafe { crate::container_of!(device.as_raw(), bindings::platform_device, dev) };
+    // SAFETY: `pdev` is a valid pointer to a `struct platform_device`.
+    let ptr = unsafe { bindings::platform_get_drvdata(pdev) } as *mut T;
+    unsafe { ptr.as_mut().unwrap() }
+}
