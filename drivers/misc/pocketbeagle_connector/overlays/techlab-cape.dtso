@@ -1,0 +1,61 @@
+// SPDX-License-Identifier: GPL-2.0-only OR MIT
+/*
+ * Copyright (C) 2025 Ayush Singh, BeagleBoard.org Foundation
+ */
+
+/dts-v1/;
+/plugin/;
+
+#include <dt-bindings/leds/common.h>
+#include <dt-bindings/gpio/gpio.h>
+#include <dt-bindings/input/input.h>
+
+/ {
+	fragment@0 {
+		target-path="";
+
+		__overlay__ {
+			techlab-led {
+				status = "okay";
+				compatible = "pwm-leds-multicolor";
+				pinctrl-names = "default";
+				pinctrl-0 = <&P1_33_A17_pwm>;
+
+				multi-led {
+					led-red {
+						pwms = <&epwm2 1 255 0>;
+						color = <LED_COLOR_ID_RED>;
+					};
+
+					led-green {
+						pwms = <&ecap2 0 255 0>;
+						color = <LED_COLOR_ID_GREEN>;
+					};
+
+					led-blue {
+						pwms = <&epwm2 0 255 0>;
+						color = <LED_COLOR_ID_BLUE>;
+					};
+				};
+			};
+
+			buttons {
+				compatible = "gpio-keys";
+				pinctrl-names = "default";
+				pinctrl-0 = <&P1_29_gpio &P2_33_gpio>;
+
+				left {
+					label = "GPIO Key Left";
+					gpios = <&main_gpio0 52 0>;
+        				linux,code = <KEY_LEFT>;
+				};
+
+				right {
+					label = "GPIO Key Right";
+					gpios = <&main_gpio0 62 0>;
+        				linux,code = <KEY_RIGHT>;
+				};
+			};
+		};
+	};
+};
