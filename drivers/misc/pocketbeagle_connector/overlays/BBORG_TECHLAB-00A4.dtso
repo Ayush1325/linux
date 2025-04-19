@@ -1,0 +1,140 @@
+// SPDX-License-Identifier: GPL-2.0-only OR MIT
+/*
+ * Copyright (C) 2025 Ayush Singh, BeagleBoard.org Foundation
+ */
+
+/dts-v1/;
+/plugin/;
+
+#include <dt-bindings/leds/common.h>
+#include <dt-bindings/gpio/gpio.h>
+#include <dt-bindings/input/input.h>
+
+/ {
+	fragment@0 {
+		target-path="";
+
+		__overlay__ {
+			techlab-led {
+				status = "okay";
+				compatible = "pwm-leds-multicolor";
+				pinctrl-names = "default";
+				pinctrl-0 = <&P1_33_PWM_PINMUX &P1_36_PWM_PINMUX &P2_01_PWM_PINMUX>;
+
+				multi-led {
+					color = <LED_COLOR_ID_RGB>;
+					max-brightness = <255>;
+
+					led-red {
+						pwms = <&pwm_connector 33 255 0>;
+						color = <LED_COLOR_ID_RED>;
+					};
+
+					led-green {
+						pwms = <&pwm_connector 37 255 0>;
+						color = <LED_COLOR_ID_GREEN>;
+					};
+
+					led-blue {
+						pwms = <&pwm_connector 36 255 0>;
+						color = <LED_COLOR_ID_BLUE>;
+					};
+				};
+			};
+
+			buttons {
+				compatible = "gpio-keys";
+				pinctrl-names = "default";
+				pinctrl-0 = <&P1_29_GPIO_PINMUX &P2_33_GPIO_PINMUX>;
+
+				left {
+					label = "GPIO Key Left";
+					gpios = <&gpio_connector 33 GPIO_ACTIVE_LOW>;
+        				linux,code = <KEY_LEFT>;
+				};
+
+				right {
+					label = "GPIO Key Right";
+					gpios = <&gpio_connector 29 GPIO_ACTIVE_LOW>;
+        				linux,code = <KEY_RIGHT>;
+				};
+			};
+
+			pocketbeagle2-connector-i2c2 {
+				#address-cells = <1>;
+				#size-cells = <0>;
+
+				accel@1c {
+					compatible = "fsl,mma8453";
+					reg = <0x1c>;
+				};
+
+				eeprom@57 {
+					compatible = "atmel,24c32";
+					reg = <0x57>;
+					pagesize = <32>;
+				};
+			};
+
+			pocketbeagle2-connector-spi0 {
+				#address-cells = <1>;
+				#size-cells = <0>;
+
+				techlab_gpio: techlab-gpio@0 {
+					pinctrl-names = "default";
+					pinctrl-0 = <
+						&P2_25_SPI_PINMUX &P2_27_SPI_PINMUX 
+						&P2_29_SPI_PINMUX &P2_31_SPI_PINMUX
+					>;
+			        	compatible = "microchip,mcp23s18";
+			        	reg = <0>;
+			        	gpio-controller;
+			        	#gpio-cells = <2>;
+			        	spi-max-frequency = <1000000>;
+			        	microchip,spi-present-mask = <1>;
+					gpio-line-names = "LD4", "LD7", "LD8",	  /* 0-2 */
+							  "LD6", "LD3", "LD2",    /* 3-5 */
+							  "LD5", "", "LD11",      /* 6-8 */
+							  "LD14", "LD15", "LD13", /* 9-11 */
+							  "LD10", "LD9", "LD12",  /* 12-14 */
+							  "";                     /* 15 */
+				};
+			};
+
+			seven-segments-left {
+				compatible = "gpio-7-segment";
+				segment-gpios = <&techlab_gpio 0 GPIO_ACTIVE_LOW>,
+						<&techlab_gpio 1 GPIO_ACTIVE_LOW>,
+						<&techlab_gpio 2 GPIO_ACTIVE_LOW>,
+						<&techlab_gpio 3 GPIO_ACTIVE_LOW>,
+						<&techlab_gpio 4 GPIO_ACTIVE_LOW>,
+						<&techlab_gpio 5 GPIO_ACTIVE_LOW>,
+						<&techlab_gpio 6 GPIO_ACTIVE_LOW>;
+			};
+
+			seven-segments-right {
+				compatible = "gpio-7-segment";
+				segment-gpios = <&techlab_gpio 8 GPIO_ACTIVE_LOW>,
+						<&techlab_gpio 9 GPIO_ACTIVE_LOW>,
+						<&techlab_gpio 10 GPIO_ACTIVE_LOW>,
+						<&techlab_gpio 11 GPIO_ACTIVE_LOW>,
+						<&techlab_gpio 12 GPIO_ACTIVE_LOW>,
+						<&techlab_gpio 13 GPIO_ACTIVE_LOW>,
+						<&techlab_gpio 14 GPIO_ACTIVE_LOW>;
+			};
+
+			buzzer_pwm: buzzer-pwm {
+				#pwm-cells = <3>;
+				compatible = "pwm-gpio";
+				pinctrl-names = "default";
+				pinctrl-0 = <&P2_30_GPIO_PINMUX>;
+				gpios = <&gpio_connector 66 GPIO_ACTIVE_HIGH>;
+			};
+
+			techlab-buzzer {
+				compatible = "pwm-beeper";
+				pwms = <&buzzer_pwm 0 50000 0>;
+			};
+		};
+	};
+};
