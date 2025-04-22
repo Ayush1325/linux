@@ -397,6 +397,11 @@ impl<Ctx: DeviceContext> Device<Ctx> {
         // defined as a `#[repr(transparent)]` wrapper around `fwnode_handle`.
         Some(unsafe { &*fwnode_handle.cast() })
     }
+
+    /// Get refernce to the device_node property
+    pub fn device_node(&self) -> &kernel::of::DeviceNode {
+        unsafe { kernel::of::DeviceNode::as_ref((*self.as_raw()).of_node) }
+    }
 }
 
 // SAFETY: `Device` is a transparent wrapper of a type that doesn't depend on `Device`'s generic

@@ -6,6 +6,7 @@ use crate::{
     bindings,
     device_id::{RawDeviceId, RawDeviceIdIndex},
     prelude::*,
+    types::Opaque
 };
 
 /// IdTable type for OF drivers.
@@ -62,4 +63,26 @@ macro_rules! of_device_table {
 
         $crate::module_device_table!("of", $module_table_name, $table_name);
     };
+}
+
+/// Devicetree device node
+#[repr(transparent)]
+pub struct DeviceNode(Opaque<bindings::device_node>);
+
+impl DeviceNode {
+    /// Convert a raw C `struct device_node` pointer to a `&'a DeviceNode`.
+    ///
+    /// # Safety
+    ///
+    /// Callers must ensure that `ptr` is valid, non-null. for the duration of this function call
+    /// and the entire duration when the returned reference exists.
+    pub unsafe fn as_ref<'a>(ptr: *mut bindings::device_node) -> &'a Self {
+        // SAFETY: Guaranteed by the safety requirements of the function.
+        unsafe { &*ptr.cast() }
+    }
+
+    /// Obtain the raw `struct device_node *`.
+    pub fn as_raw(&self) -> *mut bindings::device_node {
+        self.0.get()
+    }
 }
