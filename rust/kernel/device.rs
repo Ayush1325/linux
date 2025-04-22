@@ -207,6 +207,11 @@ impl<Ctx: DeviceContext> Device<Ctx> {
         // SAFETY: By the invariant of `CStr`, `name` is null-terminated.
         unsafe { bindings::device_property_present(self.as_raw().cast_const(), name.as_char_ptr()) }
     }
+
+    /// Get refernce to the device_node property
+    pub fn device_node(&self) -> &kernel::of::DeviceNode {
+        unsafe { kernel::of::DeviceNode::as_ref((*self.as_raw()).of_node) }
+    }
 }
 
 // SAFETY: `Device` is a transparent wrapper of a type that doesn't depend on `Device`'s generic
