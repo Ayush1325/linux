@@ -6,6 +6,7 @@
 
 use crate::{
     bindings,
+    error::to_result,
     str::CStr,
     types::{ARef, Opaque},
 };
@@ -211,6 +212,20 @@ impl<Ctx: DeviceContext> Device<Ctx> {
     /// Get refernce to the device_node property
     pub fn device_node(&self) -> &kernel::of::DeviceNode {
         unsafe { kernel::of::DeviceNode::as_ref((*self.as_raw()).of_node) }
+    }
+}
+
+impl Device<Bound> {
+    /// Populate platform_devices from device tree data
+    pub fn devm_of_platform_populate(&self) -> crate::error::Result<()> {
+        // SAFETY: self is valid bound Device reference
+        to_result(unsafe { bindings::devm_of_platform_populate(self.as_raw()) })
+    }
+
+    /// Remove devices populated from device tree
+    pub fn devm_of_platform_depopulate(&self) {
+        // SAFETY: self is valid bound Device reference
+        unsafe { bindings::devm_of_platform_depopulate(self.as_raw()) }
     }
 }
 
