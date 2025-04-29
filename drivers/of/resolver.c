@@ -212,10 +212,55 @@ static int adjust_local_phandle_references(const struct device_node *local_fixup
 	return 0;
 }
 
+static int get_phandle_from_symbols_node(const struct device_node *tree_symbols,
+					 const char *symbol_name,
+					 phandle *phandle)
+{
+	struct device_node *refnode;
+	const char *refpath;
+	int err;
+
+	if (!tree_symbols)
+		return -ENOENT;
+
+	err = of_property_read_string(tree_symbols, symbol_name, &refpath);
+	if (err)
+		return err;
+
+	refnode = of_find_node_by_path(refpath);
+	if (!refnode)
+		return -ENOENT;
+
+	*phandle = refnode->phandle;
+	of_node_put(refnode);
+
+	return 0;
+}
+
+static int get_phandle_from_export_node(const struct device_node *export_symbols,
+					const char *symbol_name,
+					phandle *phandle)
+{
+	struct device_node *refnode;
+
+	if (!export_symbols)
+		return -ENOENT;
+
+	refnode = of_parse_phandle(export_symbols, symbol_name, 0);
+	if (!refnode)
+		return -ENOENT;
+
+	*phandle = refnode->phandle;
+	of_node_put(refnode);
+
+	return 0;
+}
+
 /**
  * of_resolve_phandles - Relocate and resolve overlay against live tree
  *
- * @overlay:	Pointer to devicetree overlay to relocate and resolve
+ * @overlay:		Pointer to devicetree overlay to relocate and resolve
+ * @export_symbols:	Pointer to devicetree export symbols node.
  *
  * Modify (relocate) values of local phandles in @overlay to a range that
  * does not conflict with the live expanded devicetree.  Update references
@@ -235,6 +280,10 @@ static int adjust_local_phandle_references(const struct device_node *local_fixup
  * corresponding to that symbol in the live tree.  Update the references in
  * the overlay with the phandle values in the live tree.
  *
+ * @export_symbols can be use in this references update. The resolver tries
+ * first to find a match in the @export_symbols. If not found, it uses the
+ * "__symbol__" node in the live tree.
+ *
  * @overlay must be detached.
  *
  * Resolving and applying @overlay to the live expanded devicetree must be
@@ -245,14 +294,13 @@ static int adjust_local_phandle_references(const struct device_node *local_fixup
  *
  * Return: %0 on success or a negative error value on error.
  */
-int of_resolve_phandles(struct device_node *overlay)
+int of_resolve_phandles(struct device_node *overlay, const struct device_node *export_symbols)
 {
-	struct device_node *child, *refnode;
+	struct device_node *child;
 	struct device_node *overlay_fixups;
 	struct device_node __free(device_node) *local_fixups = NULL;
-	struct property *prop;
-	const char *refpath;
 	phandle phandle, phandle_delta;
+	struct property *prop;
 	int err;
 
 	if (!overlay) {
@@ -287,7 +335,7 @@ int of_resolve_phandles(struct device_node *overlay)
 		return 0;
 
 	struct device_node __free(device_node) *tree_symbols = of_find_node_by_path("/__symbols__");
-	if (!tree_symbols) {
+	if (!tree_symbols && !export_symbols) {
 		pr_err("no symbols in root of device tree.\n");
 		return -EINVAL;
 	}
@@ -298,20 +346,16 @@ int of_resolve_phandles(struct device_node *overlay)
 		if (!of_prop_cmp(prop->name, "name"))
 			continue;
 
-		err = of_property_read_string(tree_symbols,
-				prop->name, &refpath);
+		err = get_phandle_from_export_node(export_symbols, prop->name,
+						   &phandle);
+		if (err)
+			err = get_phandle_from_symbols_node(tree_symbols, prop->name,
+							    &phandle);
 		if (err) {
-			pr_err("node label '%s' not found in live devicetree symbols table\n",
+			pr_err("node label '%s' not found or invalid in live devicetree symbols or export tables\n",
 			       prop->name);
 			return err;
 		}
-
-		refnode = of_find_node_by_path(refpath);
-		if (!refnode)
-			return -ENOENT;
-
-		phandle = refnode->phandle;
-		of_node_put(refnode);
 
 		err = update_usages_of_a_phandle_reference(overlay, prop, phandle);
 		if (err)
