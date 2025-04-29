@@ -184,6 +184,17 @@
 			bootph-all;
 		};
 	};
+
+	pocketbeagle_connector: pocketbeagle-connector {
+		status = "okay";
+		compatible = "pocketbeagle2-connector";
+
+		export-symbols {
+			P1_33_PWM = <&P1_33_A17_pwm>;
+			P1_29_GPIO = <&P1_29_gpio>;
+			P2_33_GPIO = <&P2_33_gpio>;
+		};
+	};
 };
 
 &main_pmx0 {
@@ -282,6 +293,25 @@
 	epwm2_pins_default: epwm2-default-pins {
 		pinctrl-single,pins = <
 			AM62X_IOPAD(0x01e8, PIN_OUTPUT, 8) /* (B17) I2C1_SCL.EHRPWM2_A */
+		>;
+	};
+
+	P1_33_A17_pwm: P1-33-A15-pwm-pins {
+		pinctrl-single,pins = <
+			AM62X_IOPAD(0x01EC, PIN_INPUT, 8) /* (A17) I2C1_SDA.EHRPWM2_B */
+			AM62X_IOPAD(0x00E4, 64, 7) /* (AA23) VOUT0_DATA11.GPIO0_56 */
+		>;
+	};
+
+	P1_29_gpio: P1-29-gpio-pins {
+		pinctrl-single,pins = <
+			AM62X_IOPAD(0x00FC, PIN_INPUT, 7) /* (Y20) VOUT0_DE.GPIO0_62 */
+		>;
+	};
+
+	P2_33_gpio: P2-33-gpio-pins {
+		pinctrl-single,pins = <
+			AM62X_IOPAD(0x00D4, PIN_INPUT, 7) /* (AA25) VOUT0_DATA7.GPIO0_52 */
 		>;
 	};
 };
