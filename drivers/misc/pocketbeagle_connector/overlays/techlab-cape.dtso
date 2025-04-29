@@ -19,7 +19,7 @@
 				status = "okay";
 				compatible = "pwm-leds-multicolor";
 				pinctrl-names = "default";
-				pinctrl-0 = <&P1_33_A17_pwm>;
+				pinctrl-0 = <&P1_33_PWM>;
 
 				multi-led {
 					led-red {
@@ -42,7 +42,7 @@
 			buttons {
 				compatible = "gpio-keys";
 				pinctrl-names = "default";
-				pinctrl-0 = <&P1_29_gpio &P2_33_gpio>;
+				pinctrl-0 = <&P1_29_GPIO &P2_33_GPIO>;
 
 				left {
 					label = "GPIO Key Left";
