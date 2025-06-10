@@ -1,0 +1,108 @@
+// SPDX-License-Identifier: GPL-2.0-only OR MIT
+/*
+ * Copyright (C) 2025 Ayush Singh, BeagleBoard.org Foundation
+ */
+
+/dts-v1/;
+/plugin/;
+
+#include <dt-bindings/leds/common.h>
+#include <dt-bindings/gpio/gpio.h>
+#include <dt-bindings/input/input.h>
+
+/ {
+	fragment@0 {
+		target-path="";
+
+		__overlay__ {
+			cape-leds {
+				compatible = "gpio-leds";
+				pinctrl-names = "default";
+				pinctrl-0 = <&P1_04_GPIO_PINMUX &P2_03_GPIO_PINMUX>;
+
+				led-1 {
+					gpios = <&gpio_connector 4 GPIO_ACTIVE_HIGH>;
+					color = <LED_COLOR_ID_RED>;
+					label = "LED1";
+				};
+
+				led-2 {
+					gpios = <&gpio_connector 39 GPIO_ACTIVE_HIGH>;
+					color = <LED_COLOR_ID_RED>;
+					label = "LED2";
+				};
+			};
+
+			buttons {
+				compatible = "gpio-keys";
+				pinctrl-names = "default";
+				pinctrl-0 = <
+					&P2_06_GPIO_PINMUX &P2_02_GPIO_PINMUX &P2_08_GPIO_PINMUX 
+					&P2_04_GPIO_PINMUX &P1_31_GPIO_PINMUX &P2_22_GPIO_PINMUX 
+					&P2_18_GPIO_PINMUX &P2_24_GPIO_PINMUX &P2_20_GPIO_PINMUX 
+					&P1_35_GPIO_PINMUX
+				>;
+
+				left-top {
+					label = "D-PAD UP";
+					gpios = <&gpio_connector 42 GPIO_ACTIVE_LOW>;
+        				linux,code = <BTN_FORWARD>;
+				};
+				left-left {
+					label = "D-PAD LEFT";
+					gpios = <&gpio_connector 44 GPIO_ACTIVE_LOW>;
+        				linux,code = <BTN_LEFT>;
+				};
+				left-bottom {
+					label = "D-PAD DOWN";
+					gpios = <&gpio_connector 38 GPIO_ACTIVE_LOW>;
+        				linux,code = <BTN_BACK>;
+				};
+				left-right {
+					label = "D-PAD RIGHT";
+					gpios = <&gpio_connector 40 GPIO_ACTIVE_LOW>;
+        				linux,code = <BTN_RIGHT>;
+				};
+
+				right-top {
+					label = "ACTION-PAD NORTH";
+					gpios = <&gpio_connector 58 GPIO_ACTIVE_LOW>;
+        				linux,code = <BTN_NORTH>;
+				};
+				right-left {
+					label = "ACTION-PAD WEST";
+					gpios = <&gpio_connector 60 GPIO_ACTIVE_LOW>;
+        				linux,code = <BTN_WEST>;
+				};
+				right-bottom {
+					label = "ACTION-PAD SOUTH";
+					gpios = <&gpio_connector 54 GPIO_ACTIVE_LOW>;
+        				linux,code = <BTN_SOUTH>;
+				};
+				right-right {
+					label = "ACTION-PAD EAST";
+					gpios = <&gpio_connector 56 GPIO_ACTIVE_LOW>;
+        				linux,code = <BTN_EAST>;
+				};
+
+				start {
+					label = "START";
+					gpios = <&gpio_connector 35 GPIO_ACTIVE_LOW>;
+        				linux,code = <BTN_START>;
+				};
+				select {
+					label = "SELECT";
+					gpios = <&gpio_connector 31 GPIO_ACTIVE_LOW>;
+        				linux,code = <BTN_SELECT>;
+				};
+			};
+
+			buzzer {
+				compatible = "pwm-beeper";
+				pinctrl-names = "default";
+				pinctrl-0 = <&P1_33_PWM_PINMUX>;
+				pwms = <&pwm_connector 33 255 0>;
+			};
+		};
+	};
+};
