@@ -46,13 +46,13 @@
 
 				left {
 					label = "GPIO Key Left";
-					gpios = <&main_gpio0 52 0>;
+					gpios = <&gpio_connector 33 GPIO_ACTIVE_LOW>;
         				linux,code = <KEY_LEFT>;
 				};
 
 				right {
 					label = "GPIO Key Right";
-					gpios = <&main_gpio0 62 0>;
+					gpios = <&gpio_connector 29 GPIO_ACTIVE_LOW>;
         				linux,code = <KEY_RIGHT>;
 				};
 			};
