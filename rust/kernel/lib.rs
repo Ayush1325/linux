@@ -91,6 +91,7 @@ pub mod miscdevice;
 pub mod mm;
 #[cfg(CONFIG_NET)]
 pub mod net;
+pub mod nvmem;
 pub mod of;
 #[cfg(CONFIG_PM_OPP)]
 pub mod opp;
