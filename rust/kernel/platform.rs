@@ -16,6 +16,7 @@ use crate::{
 
 use core::{
     marker::PhantomData,
+    ops::Deref,
     ptr::{addr_of_mut, NonNull},
 };
 
@@ -195,6 +196,11 @@ pub struct Device<Ctx: device::DeviceContext = device::Normal>(
 impl<Ctx: device::DeviceContext> Device<Ctx> {
     fn as_raw(&self) -> *mut bindings::platform_device {
         self.0.get()
+    }
+
+    pub fn fwnode(&self) -> &crate::fwnode::FwnodeHandle {
+        let fwnode = unsafe { bindings::__dev_fwnode(self.as_ref().as_raw()) };
+        unsafe { crate::fwnode::FwnodeHandle::as_ref(fwnode) }
     }
 }
 
