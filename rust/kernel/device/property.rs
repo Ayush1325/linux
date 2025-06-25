@@ -293,6 +293,13 @@ impl FwNode {
 
         Ok(out_args)
     }
+
+    pub fn find_reference(&self, prop: &CStr, index: u32) -> Result<ARef<Self>> {
+        let ptr = kernel::error::from_err_ptr(unsafe {
+            bindings::fwnode_find_reference(self.as_raw(), prop.as_ptr(), index)
+        })?;
+        Ok(unsafe { Self::from_raw(ptr) })
+    }
 }
 
 /// The number of arguments to request [`FwNodeReferenceArgs`].
