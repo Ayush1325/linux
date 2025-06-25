@@ -89,6 +89,7 @@ pub mod faux;
 pub mod firmware;
 pub mod fmt;
 pub mod fs;
+pub mod i2c;
 pub mod init;
 pub mod io;
 pub mod ioctl;
