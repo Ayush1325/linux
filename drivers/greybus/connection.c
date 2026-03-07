@@ -40,17 +40,18 @@ static void gb_connection_get(struct gb_connection *connection)
 	trace_gb_connection_get(connection);
 }
 
-static void gb_connection_put(struct gb_connection *connection)
+void gb_connection_put(struct gb_connection *connection)
 {
 	trace_gb_connection_put(connection);
 
 	kref_put(&connection->kref, gb_connection_kref_release);
 }
+EXPORT_SYMBOL_GPL(gb_connection_put);
 
 /*
  * Returns a reference-counted pointer to the connection if found.
  */
-static struct gb_connection *
+struct gb_connection *
 gb_connection_hd_find(struct gb_host_device *hd, u16 cport_id)
 {
 	struct gb_connection *connection;
@@ -68,6 +69,28 @@ found:
 
 	return connection;
 }
+EXPORT_SYMBOL_GPL(gb_connection_hd_find);
+
+struct gb_connection *
+gb_connection_hd_find_by_intf(struct gb_host_device *hd, u8 intf_id, u16 intf_cport)
+{
+	struct gb_connection *connection;
+	unsigned long flags;
+
+	spin_lock_irqsave(&gb_connections_lock, flags);
+	list_for_each_entry(connection, &hd->connections, hd_links)
+		if (connection->intf->interface_id == intf_id && connection->intf_cport_id == intf_cport) {
+			gb_connection_get(connection);
+			goto found;
+		}
+	connection = NULL;
+found:
+	spin_unlock_irqrestore(&gb_connections_lock, flags);
+
+	return connection;
+
+}
+EXPORT_SYMBOL_GPL(gb_connection_hd_find_by_intf);
 
 /*
  * Callback from the host driver to let us know that data has been

@@ -128,4 +128,12 @@ static inline void gb_connection_set_data(struct gb_connection *connection,
 	connection->private = data;
 }
 
+struct gb_connection *
+gb_connection_hd_find(struct gb_host_device *hd, u16 cport_id);
+
+struct gb_connection *
+gb_connection_hd_find_by_intf(struct gb_host_device *hd, u8 intf_id, u16 intf_cport);
+
+void gb_connection_put(struct gb_connection *connection);
+
 #endif /* __CONNECTION_H */
