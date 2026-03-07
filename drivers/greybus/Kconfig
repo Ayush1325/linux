@@ -30,6 +30,14 @@ config GREYBUS_BEAGLEPLAY
 	  To compile this code as a module, chose M here: the module
 	  will be called gb-beagleplay.ko
 
+config GREYBUS_I2C_HOST
+	tristate "Greybus I2C Host driver"
+	help
+	  Select this option if you want to use greybus over I2C.
+
+	  To compile this code as a module, chose M here: the module
+	  will be called gb-beagleplay.ko
+
 config GREYBUS_ES2
 	tristate "Greybus ES3 USB host controller"
 	depends on USB
